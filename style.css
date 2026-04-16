@@ -1,0 +1,135 @@
+/* --- Root Variables for easy theme management --- */
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-light: #f8fafc;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --border-color: #e2e8f0;
+    --open: #3b82f6;
+    --resolved: #10b981;
+    --overdue: #ef4444;
+    --high: #dc2626;
+    --medium: #f59e0b;
+    --low: #6366f1;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+}
+
+/* --- Login Section Enhancement --- */
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.login-card h2 {
+    color: var(--text-main);
+    letter-spacing: -0.025em;
+}
+
+/* --- Navbar Styling --- */
+.navbar {
+    background-color: var(--white) !important;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+}
+
+.navbar-brand {
+    color: var(--primary) !important;
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+/* --- Main Dashboard UI --- */
+.main-content-wrapper {
+    padding: 2rem;
+}
+
+.card-title {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* --- Kanban / Issue Cards --- */
+.kanban-column {
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    min-height: 80vh;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.issue-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.issue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.prio-high { border-left: 5px solid var(--high); }
+.prio-medium { border-left: 5px solid var(--medium); }
+.prio-low { border-left: 5px solid var(--low); }
+
+/* --- Badges & Tags --- */
+.badge-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+}
+
+.status-open { background: #dbeafe; color: #1e40af; }
+.status-resolved { background: #dcfce7; color: #166534; }
+.status-overdue { background: #fee2e2; color: #991b1b; }
+
+/* --- Form Improvements --- */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
