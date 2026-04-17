@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Issue</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>Edit Issue</h2>
+
+<form id="editForm">
+  <input type="hidden" id="issueId">
+  <label>Summary:</label>  
+  <input type="text" id="summary" required>
+    <label>Description:</label>
+  <textarea id="description"></textarea>
+  <label>Person:</label>
+
+  <input type="text" id="person">
+    <label>Project:</label>
+  <input type="text" id="project">
+    <label>Status:</label>
+  <select id="status">
+    <option value="open">Open</option>
+    <option value="resolved">Resolved</option>
+  </select>
+    <label>Priority:</label>
+  <select id="priority">
+    <option value="low">Low</option>
+    <option value="medium">Medium</option>
+    <option value="high">High</option>
+  </select>
+    <label>Due Date:</label>
+  <input type="date" id="dueDate">
+
+  <div id="resolutionFields">
+    <label>Resolution Summary:</label>
+    <input type="text" id="resolutionSummary">
+    <label>Resolution Date:</label>
+    <input type="date" id="resolutionDate">
+  </div>
+
+  <button type="submit">Update Issue</button>
+</form>
+
+<script src="storage.js"></script>
+<script>
+
+document.getElementById("status").addEventListener("change", function () {
+  resolutionFields.style.display = this.value === "resolved" ? "block" : "none";
+});
+
+function applyStatusLogic(issue) {
+  const today = new Date();
+  const due = new Date(issue.dueDate);
+
+  if (issue.status !== "resolved" && issue.dueDate && due < today) {
+    issue.status = "overdue";
+  }
+  return issue;
+}
+
+function validate(issue) {
+  if (issue.status === "resolved") {
+    if (!issue.resolutionSummary || !issue.resolutionDate) {
+      return "Resolution details required";
+    }
+  }
+  return null;
+}
+
+function loadIssue(issue) {
+  issueId.value = issue.id;
+  summary.value = issue.summary;
+  description.value = issue.description;
+  person.value = issue.person;
+  project.value = issue.project;
+  status.value = issue.status;
+  priority.value = issue.priority;
+  dueDate.value = issue.dueDate;
+  resolutionSummary.value = issue.resolutionSummary || "";
+  resolutionDate.value = issue.resolutionDate || "";
+
+  resolutionFields.style.display =
+    issue.status === "resolved" ? "block" : "none";
+}
+
+document.getElementById("editForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  let issue = {
+    id: issueId.value,
+    summary: summary.value,
+    description: description.value,
+    person: person.value,
+    project: project.value,
+    status: status.value,
+    priority: priority.value,
+    dueDate: dueDate.value,
+    resolutionSummary: resolutionSummary.value,
+    resolutionDate: resolutionDate.value
+  };
+
+  const error = validate(issue);
+  if (error) return alert(error);
+
+  issue = applyStatusLogic(issue);
+
+  BTS.updateItem(BTS.KEYS.issues, issue);
+});
+</script>
+</body>
+</html>

@@ -133,3 +133,91 @@ body {
 .btn-primary:hover {
     background-color: var(--primary-hover);
 }
+#createForm,
+#editForm {
+  background: var(--white);
+  padding: 25px 30px;
+  border-radius: 10px;
+  max-width: 900px;
+  margin: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+#summary,
+#description {
+  grid-column: span 2;
+}
+
+#summary,
+#description,
+#person,
+#project,
+#status,
+#priority,
+#dueDate,
+#resolutionSummary,
+#resolutionDate {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--white);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+#summary:focus,
+#description:focus,
+#person:focus,
+#project:focus,
+#status:focus,
+#priority:focus,
+#dueDate:focus,
+#resolutionSummary:focus,
+#resolutionDate:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+::placeholder {
+  color: var(--text-muted);
+}
+
+#description {
+  min-height: 80px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+#resolutionFields {
+  background: var(--bg-light);
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
