@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugTracker Pro | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ---- Dashboard Layout ---- */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        /* ---- View Toggle ---- */
+        .view-toggle .btn {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4rem 1rem;
+        }
+
+        /* ---- Filters ---- */
+        .filter-bar {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .filter-bar select,
+        .filter-bar input {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            background: var(--bg-light);
+        }
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ---- Kanban Board ---- */
+        #kanban-view .kanban-wrapper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+        @media (max-width: 1100px) {
+            #kanban-view .kanban-wrapper { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            #kanban-view .kanban-wrapper { grid-template-columns: 1fr; }
+        }
+        .kanban-column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .kanban-column-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .kanban-count {
+            background: var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 0.1rem 0.55rem;
+        }
+        .issue-card .issue-summary {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        .issue-card .issue-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.6rem;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .issue-card .issue-project {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .issue-card .issue-assignee {
+            font-size: 0.72rem;
+            background: #f1f5f9;
+            color: var(--text-main);
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 500;
+        }
+        .issue-card .issue-date {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+        .badge-priority {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .prio-badge-high { background: #fee2e2; color: #991b1b; }
+        .prio-badge-medium { background: #fef3c7; color: #92400e; }
+        .prio-badge-low { background: #ede9fe; color: #4c1d95; }
+
+        /* Column accent colors */
+        .col-backlog { border-top: 3px solid #94a3b8; }
+        .col-open    { border-top: 3px solid var(--open); }
+        .col-overdue { border-top: 3px solid var(--overdue); }
+        .col-resolved{ border-top: 3px solid var(--resolved); }
+
+        /* ---- List View ---- */
+        #list-view table {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        #list-view thead th {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+        }
+        #list-view tbody td {
+            font-size: 0.875rem;
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        #list-view tbody tr:last-child td { border-bottom: none; }
+        #list-view tbody tr:hover { background: #f8fafc; cursor: pointer; }
+
+        /* ---- Stats Bar ---- */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 700px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+        }
+        .stat-card .stat-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        /* ---- Modal - Single Issue View ---- */
+        .modal-content {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+        .modal-body { padding: 1.5rem; }
+        .issue-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) { .issue-detail-grid { grid-template-columns: 1fr; } }
+        .detail-field {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+        .detail-field label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        .detail-field .detail-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .detail-field.span-2 { grid-column: span 2; }
+        .resolution-section {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .resolution-section h6 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #166534;
+            margin-bottom: 0.75rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <!-- ====================== MODAL: Single Issue View ====================== -->
+    <div class="modal fade" id="issueModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span id="modal-status-badge" class="badge-status"></span>
+                            <span id="modal-priority-badge" class="badge-priority"></span>
+                        </div>
+                        <h5 class="modal-title fw-bold mb-0" id="modal-summary">Issue Title</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="issue-detail-grid" id="modal-detail-grid">
+                        <!-- fields injected by JS -->
+                    </div>
+                    <div id="modal-resolution-section" class="resolution-section d-none">
+                        <h6>✅ Resolution Details</h6>
+                        <div class="issue-detail-grid">
+                            <div class="detail-field">
+                                <label>Resolution Summary</label>
+                                <div class="detail-value" id="modal-res-summary">—</div>
+                            </div>
+                            <div class="detail-field">
+                                <label>Resolution Date</label>
+                                <div class="detail-value" id="modal-res-date">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary btn-sm" id="modal-edit-btn">Edit Issue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================== MAIN DASHBOARD CONTENT ====================== -->
+    <!-- NOTE: This file is meant to be embedded inside index.html's #main-ui, 
+         but works standalone too. -->
+
+    <div class="main-content-wrapper" id="dashboard-root">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">📋 Issue Dashboard</h1>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <div class="view-toggle btn-group" role="group">
+                    <button class="btn btn-primary btn-sm" id="btn-kanban" onclick="switchView('kanban')">🗂 Kanban</button>
+                    <button class="btn btn-outline-secondary btn-sm" id="btn-list" onclick="switchView('list')">📄 List</button>
+                </div>
+                <a href="IssueCreation.html" class="btn btn-success btn-sm fw-semibold">+ New Issue</a>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar" id="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label">Total Issues</div>
+                <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card" style="border-top: 3px solid var(--open);">
+                <div class="stat-label">Open</div>
+                <div class="stat-value" id="stat-open" style="color:var(--open)">0</div>
+            </div>
+            <div class="stat-card" style="border-top: 3px solid var(--overdue);">
+                <div class="stat-label">Overdue</div>
+                <div class="stat-value" id="stat-overdue" style="color:var(--overdue)">0</div>
+            </div>
+            <div class="stat-card" style="border-top: 3px solid var(--resolved);">
+                <div class="stat-label">Resolved</div>
+                <div class="stat-value" id="stat-resolved" style="color:var(--resolved)">0</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <span class="filter-label">Filter:</span>
+            <select id="filter-status" onchange="applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="open">Open</option>
+                <option value="resolved">Resolved</option>
+                <option value="overdue">Overdue</option>
+            </select>
+            <select id="filter-priority" onchange="applyFilters()">
+                <option value="">All Priorities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+            <select id="filter-project" onchange="applyFilters()">
+                <option value="">All Projects</option>
+            </select>
+            <input type="text" id="filter-search" placeholder="Search issues..." oninput="applyFilters()" style="min-width:160px;">
+            <button class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+        </div>
+
+        <!-- ========== KANBAN VIEW ========== -->
+        <div id="kanban-view">
+            <div class="kanban-wrapper">
+                <!-- Backlog (open, no assignee) -->
+                <div class="kanban-column col-open" id="col-open">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title" style="color:var(--open)">🔵 Open</span>
+                        <span class="kanban-count" id="count-open">0</span>
+                    </div>
+                    <div id="cards-open"></div>
+                    <div class="empty-state d-none" id="empty-open">
+                        <div class="empty-icon">🎉</div>
+                        <div style="font-size:0.8rem">No open issues</div>
+                    </div>
+                </div>
+
+                <!-- Overdue -->
+                <div class="kanban-column col-overdue" id="col-overdue">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title" style="color:var(--overdue)">🔴 Overdue</span>
+                        <span class="kanban-count" id="count-overdue">0</span>
+                    </div>
+                    <div id="cards-overdue"></div>
+                    <div class="empty-state d-none" id="empty-overdue">
+                        <div class="empty-icon">✅</div>
+                        <div style="font-size:0.8rem">None overdue</div>
+                    </div>
+                </div>
+
+                <!-- In Progress (assigned but open) — using assignedTo as proxy -->
+                <div class="kanban-column" style="border-top:3px solid #f59e0b;" id="col-inprogress">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title" style="color:#d97706">🟡 In Progress</span>
+                        <span class="kanban-count" id="count-inprogress">0</span>
+                    </div>
+                    <div id="cards-inprogress"></div>
+                    <div class="empty-state d-none" id="empty-inprogress">
+                        <div class="empty-icon">🚀</div>
+                        <div style="font-size:0.8rem">Nothing in progress</div>
+                    </div>
+                </div>
+
+                <!-- Resolved / Done -->
+                <div class="kanban-column col-resolved" id="col-resolved">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title" style="color:var(--resolved)">🟢 Resolved</span>
+                        <span class="kanban-count" id="count-resolved">0</span>
+                    </div>
+                    <div id="cards-resolved"></div>
+                    <div class="empty-state d-none" id="empty-resolved">
+                        <div class="empty-icon">📭</div>
+                        <div style="font-size:0.8rem">None resolved yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LIST VIEW ========== -->
+        <div id="list-view" class="d-none">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="cursor:pointer" onclick="sortBy('id')">#ID ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('summary')">Summary ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('project')">Project ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('assignedTo')">Assignee ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('priority')">Priority ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('status')">Status ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('date')">Date ↕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-tbody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state d-none" id="empty-list">
+                <div class="empty-icon">🔍</div>
+                <div>No issues found matching your filters.</div>
+            </div>
+        </div>
+
+    </div><!-- end dashboard-root -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="storage.js"></script>
+    <script>
+    // ============================================================
+    //  ROLE 3: Dashboard & UI Master
+    //  Criteria: View All Issues (C3), View Single Issue (C4)
+    // ============================================================
+
+    let allIssues = [];
+    let filteredIssues = [];
+    let currentView = 'kanban';
+    let sortKey = 'id';
+    let sortAsc = true;
+    let selectedIssueId = null;
+
+    const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
+
+    // ---- Helpers ----
+    function statusBadgeHtml(status) {
+        const map = {
+            open: 'status-open',
+            resolved: 'status-resolved',
+            overdue: 'status-overdue'
+        };
+        const cls = map[status] || 'status-open';
+        return `<span class="badge-status ${cls}">${status}</span>`;
+    }
+
+    function priorityBadgeHtml(priority) {
+        const map = {
+            high: 'prio-badge-high',
+            medium: 'prio-badge-medium',
+            low: 'prio-badge-low'
+        };
+        const cls = map[priority] || 'prio-badge-low';
+        return `<span class="badge-priority ${cls}">${priority}</span>`;
+    }
+
+    function prioCardClass(priority) {
+        return `prio-${priority}`;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        const d = new Date(dateStr);
+        if (isNaN(d)) return dateStr;
+        return d.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    // ---- Load & Refresh ----
+    function loadIssues() {
+        allIssues = BTS.getData(BTS.KEYS.ISSUES) || [];
+        applyFilters();
+    }
+
+    // ---- Stats ----
+    function updateStats(issues) {
+        document.getElementById('stat-total').textContent = issues.length;
+        document.getElementById('stat-open').textContent = issues.filter(i => i.status === 'open').length;
+        document.getElementById('stat-overdue').textContent = issues.filter(i => i.status === 'overdue').length;
+        document.getElementById('stat-resolved').textContent = issues.filter(i => i.status === 'resolved').length;
+    }
+
+    // ---- Filter Project Dropdown ----
+    function populateProjectFilter() {
+        const sel = document.getElementById('filter-project');
+        const projects = [...new Set(allIssues.map(i => i.project).filter(Boolean))].sort();
+        const current = sel.value;
+        sel.innerHTML = '<option value="">All Projects</option>';
+        projects.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            if (p === current) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    }
+
+    // ---- Apply Filters ----
+    function applyFilters() {
+        populateProjectFilter();
+        const statusF = document.getElementById('filter-status').value;
+        const priorityF = document.getElementById('filter-priority').value;
+        const projectF = document.getElementById('filter-project').value;
+        const searchF = document.getElementById('filter-search').value.toLowerCase();
+
+        filteredIssues = allIssues.filter(issue => {
+            if (statusF && issue.status !== statusF) return false;
+            if (priorityF && issue.priority !== priorityF) return false;
+            if (projectF && issue.project !== projectF) return false;
+            if (searchF && !((issue.summary || '').toLowerCase().includes(searchF) ||
+                             (issue.description || '').toLowerCase().includes(searchF))) return false;
+            return true;
+        });
+
+        updateStats(filteredIssues);
+        renderCurrentView();
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-priority').value = '';
+        document.getElementById('filter-project').value = '';
+        document.getElementById('filter-search').value = '';
+        applyFilters();
+    }
+
+    // ---- View Switching ----
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('kanban-view').classList.toggle('d-none', view !== 'kanban');
+        document.getElementById('list-view').classList.toggle('d-none', view !== 'list');
+        document.getElementById('btn-kanban').className = view === 'kanban'
+            ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm';
+        document.getElementById('btn-list').className = view === 'list'
+            ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm';
+        renderCurrentView();
+    }
+
+    function renderCurrentView() {
+        if (currentView === 'kanban') renderKanban();
+        else renderList();
+    }
+
+    // ---- Build Issue Card (Kanban) ----
+    function buildIssueCard(issue) {
+        const card = document.createElement('div');
+        card.className = `issue-card ${prioCardClass(issue.priority)}`;
+        card.setAttribute('data-id', issue.id);
+        card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start mb-1">
+                ${priorityBadgeHtml(issue.priority)}
+                <span style="font-size:0.72rem;color:var(--text-muted)">#${issue.id}</span>
+            </div>
+            <div class="issue-summary">${issue.summary || 'Untitled Issue'}</div>
+            <div class="issue-project">${issue.project || '—'}</div>
+            <div class="issue-meta">
+                <span class="issue-assignee">👤 ${issue.assignedTo || 'Unassigned'}</span>
+                <span class="issue-date">${formatDate(issue.date)}</span>
+            </div>
+        `;
+        card.addEventListener('click', () => openIssueModal(issue.id));
+        return card;
+    }
+
+    // ---- Render Kanban ----
+    function renderKanban() {
+        const columns = {
+            open: { cards: 'cards-open', count: 'count-open', empty: 'empty-open' },
+            overdue: { cards: 'cards-overdue', count: 'count-overdue', empty: 'empty-overdue' },
+            inprogress: { cards: 'cards-inprogress', count: 'count-inprogress', empty: 'empty-inprogress' },
+            resolved: { cards: 'cards-resolved', count: 'count-resolved', empty: 'empty-resolved' }
+        };
+
+        // Clear
+        Object.values(columns).forEach(c => {
+            document.getElementById(c.cards).innerHTML = '';
+        });
+
+        // Categorize: "in progress" = open + has assignee; "open" = open + no assignee
+        const categorized = { open: [], overdue: [], inprogress: [], resolved: [] };
+
+        filteredIssues.forEach(issue => {
+            if (issue.status === 'resolved') {
+                categorized.resolved.push(issue);
+            } else if (issue.status === 'overdue') {
+                categorized.overdue.push(issue);
+            } else if (issue.status === 'open' && issue.assignedTo) {
+                categorized.inprogress.push(issue);
+            } else {
+                categorized.open.push(issue);
+            }
+        });
+
+        // Render each column
+        Object.entries(categorized).forEach(([colKey, issues]) => {
+            const col = columns[colKey];
+            const container = document.getElementById(col.cards);
+            const emptyEl = document.getElementById(col.empty);
+            document.getElementById(col.count).textContent = issues.length;
+
+            // Sort by priority within column
+            issues.sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 2) - (PRIORITY_ORDER[b.priority] ?? 2));
+
+            if (issues.length === 0) {
+                emptyEl.classList.remove('d-none');
+            } else {
+                emptyEl.classList.add('d-none');
+                issues.forEach(issue => container.appendChild(buildIssueCard(issue)));
+            }
+        });
+    }
+
+    // ---- Render List ----
+    function sortBy(key) {
+        if (sortKey === key) sortAsc = !sortAsc;
+        else { sortKey = key; sortAsc = true; }
+        renderList();
+    }
+
+    function renderList() {
+        const tbody = document.getElementById('list-tbody');
+        const emptyEl = document.getElementById('empty-list');
+        tbody.innerHTML = '';
+
+        const sorted = [...filteredIssues].sort((a, b) => {
+            let av = a[sortKey] ?? '';
+            let bv = b[sortKey] ?? '';
+            if (sortKey === 'priority') { av = PRIORITY_ORDER[av] ?? 9; bv = PRIORITY_ORDER[bv] ?? 9; }
+            if (typeof av === 'string') av = av.toLowerCase();
+            if (typeof bv === 'string') bv = bv.toLowerCase();
+            if (av < bv) return sortAsc ? -1 : 1;
+            if (av > bv) return sortAsc ? 1 : -1;
+            return 0;
+        });
+
+        if (sorted.length === 0) {
+            emptyEl.classList.remove('d-none');
+            return;
+        }
+        emptyEl.classList.add('d-none');
+
+        sorted.forEach(issue => {
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-id', issue.id);
+            tr.innerHTML = `
+                <td><span style="font-size:0.75rem;color:var(--text-muted)">#${issue.id}</span></td>
+                <td><strong style="font-size:0.875rem">${issue.summary || '—'}</strong></td>
+                <td><span style="font-size:0.8rem">${issue.project || '—'}</span></td>
+                <td><span class="issue-assignee">👤 ${issue.assignedTo || 'Unassigned'}</span></td>
+                <td>${priorityBadgeHtml(issue.priority)}</td>
+                <td>${statusBadgeHtml(issue.status)}</td>
+                <td><span style="font-size:0.8rem;color:var(--text-muted)">${formatDate(issue.date)}</span></td>
+            `;
+            tr.addEventListener('click', () => openIssueModal(issue.id));
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ---- Single Issue Modal ----
+    function openIssueModal(issueId) {
+        const issue = allIssues.find(i => i.id == issueId);
+        if (!issue) return;
+        selectedIssueId = issueId;
+
+        // Header
+        document.getElementById('modal-summary').textContent = issue.summary || 'Untitled Issue';
+
+        const statusBadge = document.getElementById('modal-status-badge');
+        statusBadge.className = `badge-status status-${issue.status}`;
+        statusBadge.textContent = issue.status;
+
+        const prioBadge = document.getElementById('modal-priority-badge');
+        prioBadge.className = `badge-priority prio-badge-${issue.priority}`;
+        prioBadge.textContent = issue.priority;
+
+        // Detail grid
+        const grid = document.getElementById('modal-detail-grid');
+        grid.innerHTML = `
+            <div class="detail-field span-2">
+                <label>Description</label>
+                <div class="detail-value">${issue.description || 'No description provided.'}</div>
+            </div>
+            <div class="detail-field">
+                <label>Project</label>
+                <div class="detail-value">${issue.project || '—'}</div>
+            </div>
+            <div class="detail-field">
+                <label>Assigned To</label>
+                <div class="detail-value">👤 ${issue.assignedTo || 'Unassigned'}</div>
+            </div>
+            <div class="detail-field">
+                <label>Reported By</label>
+                <div class="detail-value">${issue.person || '—'}</div>
+            </div>
+            <div class="detail-field">
+                <label>Date Identified</label>
+                <div class="detail-value">${formatDate(issue.date)}</div>
+            </div>
+            <div class="detail-field">
+                <label>Target Resolution</label>
+                <div class="detail-value">${formatDate(issue.dueDate)}</div>
+            </div>
+            <div class="detail-field">
+                <label>Issue ID</label>
+                <div class="detail-value">#${issue.id}</div>
+            </div>
+        `;
+
+        // Resolution section
+        const resSection = document.getElementById('modal-resolution-section');
+        if (issue.status === 'resolved' && (issue.resolutionSummary || issue.resolutionDate)) {
+            resSection.classList.remove('d-none');
+            document.getElementById('modal-res-summary').textContent = issue.resolutionSummary || '—';
+            document.getElementById('modal-res-date').textContent = formatDate(issue.resolutionDate);
+        } else {
+            resSection.classList.add('d-none');
+        }
+
+        // Edit button
+        document.getElementById('modal-edit-btn').onclick = () => {
+            window.location.href = `IssueCreation.html?edit=${issue.id}`;
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('issueModal'));
+        modal.show();
+    }
+
+    // ---- Init ----
+    document.addEventListener('DOMContentLoaded', () => {
+        // Works standalone or embedded
+        if (typeof BTS !== 'undefined') {
+            loadIssues();
+        } else {
+            // Wait for storage.js if loaded async
+            setTimeout(loadIssues, 100);
+        }
+    });
+    </script>
+</body>
+</html>
