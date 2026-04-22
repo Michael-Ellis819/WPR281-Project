@@ -41,7 +41,7 @@
   <label>Due Date:</label>
   <input type="date" id="dueDate">
 
-   <div id="resolutionFields">
+  <div id="resolutionFields">
     <label>Resolution Summary:</label>
     <input type="text" id="resolutionSummary">
     <label>Resolution Date:</label>
@@ -53,10 +53,8 @@
 
 <script src="storage.js"></script>
 <script>
-
 document.getElementById("status").addEventListener("change", function () {
-  document.getElementById("resolutionFields").style.display =
-    this.value === "resolved" ? "block" : "none";
+  resolutionFields.style.display = this.value === "resolved" ? "block" : "none";
 });
 
 function applyStatusLogic(issue) {
@@ -145,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
         loadIssue(issue);
     }
 });
-
 document.getElementById("status").addEventListener("change", function () {
   document.getElementById("resolutionFields").style.display =
     this.value === "resolved" ? "block" : "none";
