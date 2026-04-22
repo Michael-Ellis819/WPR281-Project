@@ -492,6 +492,24 @@
         if (isNaN(d)) return dateStr;
         return d.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' });
     }
+    function getPersonDisplay(username) {
+    if (!username) return '👤 Unassigned';
+
+    const people = BTS.getData(BTS.KEYS.PEOPLE);
+    const person = people.find(p => p.username === username);
+
+    if (!person) return '👤 ' + username;
+
+    if (person.profilePicture) {
+        return `
+            <img src="${person.profilePicture}" 
+                 style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:5px;">
+            ${person.name} ${person.surname}
+        `;
+    }
+
+    return `👤 ${person.name} ${person.surname}`;
+}
 
     // ---- Load & Refresh ----
     function loadIssues() {
@@ -581,7 +599,7 @@
             <div class="issue-summary">${issue.summary || 'Untitled Issue'}</div>
             <div class="issue-project">${issue.project || '—'}</div>
             <div class="issue-meta">
-                <span class="issue-assignee">👤 ${issue.assignedTo || 'Unassigned'}</span>
+                <span class="issue-assignee">${getPersonDisplay(issue.assignedTo)}</span>
                 <span class="issue-date">${formatDate(issue.date)}</span>
             </div>
         `;
@@ -673,7 +691,7 @@
                 <td><span style="font-size:0.75rem;color:var(--text-muted)">#${issue.id}</span></td>
                 <td><strong style="font-size:0.875rem">${issue.summary || '—'}</strong></td>
                 <td><span style="font-size:0.8rem">${issue.project || '—'}</span></td>
-                <td><span class="issue-assignee">👤 ${issue.assignedTo || 'Unassigned'}</span></td>
+                <td><span class="issue-assignee">${getPersonDisplay(issue.assignedTo)}</span></td>
                 <td>${priorityBadgeHtml(issue.priority)}</td>
                 <td>${statusBadgeHtml(issue.status)}</td>
                 <td><span style="font-size:0.8rem;color:var(--text-muted)">${formatDate(issue.date)}</span></td>
@@ -713,7 +731,10 @@
             </div>
             <div class="detail-field">
                 <label>Assigned To</label>
-                <div class="detail-value">👤 ${issue.assignedTo || 'Unassigned'}</div>
+                <div class="detail-field">
+                    <label>Assigned To</label>
+                    <div class="detail-value">${getPersonDisplay(issue.assignedTo)}</div>
+                </div>
             </div>
             <div class="detail-field">
                 <label>Reported By</label>

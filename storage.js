@@ -26,11 +26,15 @@ function showApp() {
     if (localStorage.getItem(KEYS.AUTH) === 'true') {
         document.getElementById('login-section').classList.add('d-none');
         document.getElementById('app-content').classList.remove('d-none');
-        initializeData(); 
+
+        initializeData();
+        initializeEntities();
     }
 }
 
 window.onload = showApp;
+
+window.addEventListener("load", showApp);
 
 function saveData(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
@@ -57,7 +61,25 @@ function initializeData() {
         ];
 
         saveData(KEYS.ISSUES, initialIssues);
-        console.log("Seed data initialized.");
+    }
+}
+
+function initializeEntities() {
+    if (getData(KEYS.PEOPLE).length === 0) {
+        const people = [
+            { id: 1, username: "msnyman", name: "Morne", surname: "Snyman", email: "morne@email.com" },
+            { id: 2, username: "llane", name: "Liam", surname: "Lane", email: "liam@email.com" }
+        ];
+        saveData(KEYS.PEOPLE, people);
+    }
+
+    if (getData(KEYS.PROJECTS).length === 0) {
+        const projects = [
+            { id: 1, name: "Web Portal" },
+            { id: 2, name: "Mobile App" },
+            { id: 3, name: "Legacy System" }
+        ];
+        saveData(KEYS.PROJECTS, projects);
     }
 }
 
@@ -76,7 +98,6 @@ function updateItem(key, updatedItem) {
     }
 }
 
-// Global accessor for Roles 2, 3, and 4
 window.BTS = {
     saveData,
     getData,
@@ -84,3 +105,5 @@ window.BTS = {
     updateItem,
     KEYS
 };
+initializeData();
+initializeEntities();

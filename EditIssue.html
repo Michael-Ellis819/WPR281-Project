@@ -7,34 +7,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Edit Issue</h2>
+
+<h2>Edit Issue</h2>
 
 <form id="editForm">
   <input type="hidden" id="issueId">
+
   <label>Summary:</label>  
   <input type="text" id="summary" required>
-    <label>Description:</label>
-  <textarea id="description"></textarea>
-  <label>Person:</label>
 
-  <input type="text" id="person">
-    <label>Project:</label>
-  <input type="text" id="project">
-    <label>Status:</label>
+  <label>Description:</label>
+  <textarea id="description"></textarea>
+
+  <label>Person:</label>
+  <select id="person"></select>
+
+  <label>Project:</label>
+  <select id="project"></select>
+
+  <label>Status:</label>
   <select id="status">
     <option value="open">Open</option>
     <option value="resolved">Resolved</option>
   </select>
-    <label>Priority:</label>
+
+  <label>Priority:</label>
   <select id="priority">
     <option value="low">Low</option>
     <option value="medium">Medium</option>
     <option value="high">High</option>
   </select>
-    <label>Due Date:</label>
+
+  <label>Due Date:</label>
   <input type="date" id="dueDate">
 
-  <div id="resolutionFields">
+   <div id="resolutionFields">
     <label>Resolution Summary:</label>
     <input type="text" id="resolutionSummary">
     <label>Resolution Date:</label>
@@ -48,7 +55,8 @@
 <script>
 
 document.getElementById("status").addEventListener("change", function () {
-  resolutionFields.style.display = this.value === "resolved" ? "block" : "none";
+  document.getElementById("resolutionFields").style.display =
+    this.value === "resolved" ? "block" : "none";
 });
 
 function applyStatusLogic(issue) {
@@ -71,18 +79,18 @@ function validate(issue) {
 }
 
 function loadIssue(issue) {
-  issueId.value = issue.id;
-  summary.value = issue.summary;
-  description.value = issue.description;
-  person.value = issue.person;
-  project.value = issue.project;
-  status.value = issue.status;
-  priority.value = issue.priority;
-  dueDate.value = issue.dueDate;
-  resolutionSummary.value = issue.resolutionSummary || "";
-  resolutionDate.value = issue.resolutionDate || "";
+  document.getElementById("issueId").value = issue.id;
+  document.getElementById("summary").value = issue.summary || "";
+  document.getElementById("description").value = issue.description || "";
+  document.getElementById("person").value = issue.assignedTo || issue.person || "";
+  document.getElementById("project").value = issue.project || "";
+  document.getElementById("status").value = issue.status || "open";
+  document.getElementById("priority").value = issue.priority || "low";
+  document.getElementById("dueDate").value = issue.dueDate || "";
+  document.getElementById("resolutionSummary").value = issue.resolutionSummary || "";
+  document.getElementById("resolutionDate").value = issue.resolutionDate || "";
 
-  resolutionFields.style.display =
+  document.getElementById("resolutionFields").style.display =
     issue.status === "resolved" ? "block" : "none";
 }
 
@@ -90,16 +98,17 @@ document.getElementById("editForm").addEventListener("submit", function(e){
   e.preventDefault();
 
   let issue = {
-    id: issueId.value,
+    id: Number(issueId.value),
     summary: summary.value,
     description: description.value,
-    person: person.value,
+    assignedTo: person.value,
     project: project.value,
     status: status.value,
     priority: priority.value,
     dueDate: dueDate.value,
     resolutionSummary: resolutionSummary.value,
-    resolutionDate: resolutionDate.value
+    resolutionDate: resolutionDate.value,
+    date: originalDate
   };
 
   const error = validate(issue);
@@ -107,8 +116,70 @@ document.getElementById("editForm").addEventListener("submit", function(e){
 
   issue = applyStatusLogic(issue);
 
-  BTS.updateItem(BTS.KEYS.issues, issue);
+  BTS.updateItem(BTS.KEYS.ISSUES, issue);
+  sessionStorage.setItem("bts_issue_updated", "1");
+  window.location.href = "index.html";
 });
+
+let originalDate = "";
+
+function getQueryParam(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+//Role4
+document.addEventListener("DOMContentLoaded", () => {
+    populatePeopleDropdown();
+    populateProjectDropdown();
+
+    const id = getQueryParam("edit");
+
+    if (!id) return;
+
+    const issues = BTS.getData(BTS.KEYS.ISSUES);
+    const issue = issues.find(i => String(i.id) === String(id));
+
+    if (issue) {
+        originalDate = issue.date || "";
+        loadIssue(issue);
+    }
+});
+
+document.getElementById("status").addEventListener("change", function () {
+  document.getElementById("resolutionFields").style.display =
+    this.value === "resolved" ? "block" : "none";
+});
+
+function populatePeopleDropdown() {
+    const people = BTS.getData(BTS.KEYS.PEOPLE);
+    const select = document.getElementById("person");
+
+    select.innerHTML = '<option value="">Select Person</option>';
+
+    people.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.username;
+        option.textContent = `${p.name} ${p.surname}`;
+        select.appendChild(option);
+    });
+}
+function populateProjectDropdown() {
+    const projects = BTS.getData(BTS.KEYS.PROJECTS);
+    const select = document.getElementById("project");
+
+    select.innerHTML = '<option value="">Select Project</option>';
+
+    projects.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.name;
+        option.textContent = p.name;
+        select.appendChild(option);
+    });
+}
+
+window.addEventListener("storage", populatePeopleDropdown);
 </script>
+
 </body>
 </html>

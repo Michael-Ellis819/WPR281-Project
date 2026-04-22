@@ -59,212 +59,285 @@
 </head>
 <body class="bg-light">
 
-    <div id="login-section" class="login-container">
-        <div class="card shadow login-card">
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold">BugTracker Pro</h2>
-                    <p class="text-muted">Single Sign-On (Admin)</p>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" id="username" class="form-control" placeholder="admin">
-                </div>
-                
-                <div class="mb-4">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="admin123">
-                </div>
-                
-                <button class="btn btn-primary w-100 py-2" onclick="handleLogin()">Login</button>
+<div id="login-section" class="login-container">
+    <div class="card shadow login-card">
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">BugTracker Pro</h2>
+                <p class="text-muted">Single Sign-On (Admin)</p>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="admin">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="admin123">
+            </div>
+
+            <button class="btn btn-primary w-100 py-2" onclick="handleLogin()">Login</button>
         </div>
     </div>
+</div>
 
-    <div id="app-content" class="d-none">
-        <nav class="navbar navbar-dark bg-dark px-4 py-3 shadow-sm">
-            <span class="navbar-brand fw-bold">BugTracker Pro</span>
-            <div class="d-flex align-items-center">
-                <span class="text-light me-3 small">Logged in as: <strong>Admin</strong></span>
-                <button class="btn btn-outline-danger btn-sm" onclick="handleLogout()">Logout</button>
-            </div>
-        </nav>
-        
-        <main class="container-fluid p-4">
-            <div id="main-ui">
-                 <div class="alert alert-success border-0 shadow-sm">
-                    <h4 class="alert-heading">Welcome Back!</h4>
-                    <p>The system is initialized and LocalStorage is active.</p>
-                 </div>
-                 
-                 </div>
-        </main>
-    </div>
+<div id="app-content" class="d-none">
 
-    <div id="main-ui">
+    <nav class="navbar navbar-dark bg-dark px-4 py-3 shadow-sm">
+        <span class="navbar-brand fw-bold">BugTracker Pro</span>
+        <div class="d-flex align-items-center">
+            <span class="text-light me-3 small">Logged in as: <strong>Admin</strong></span>
+            <button class="btn btn-outline-danger btn-sm" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
 
-    <!-- Single Issue Modal -->
-    <div class="modal fade" id="issueModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span id="modal-status-badge" class="badge-status"></span>
-                            <span id="modal-priority-badge" class="badge-priority"></span>
-                        </div>
-                        <h5 class="modal-title fw-bold mb-0" id="modal-summary">Issue Title</h5>
+    <main class="container-fluid p-4">
+
+        <div class="alert alert-success border-0 shadow-sm">
+            <h4 class="alert-heading">Welcome Back!</h4>
+            <p>The system is initialized and LocalStorage is active.</p>
+        </div>
+
+        <div id="main-ui">
+
+            <!-- ============================================================-->
+            <!--  ROLE 4: People and Project Management-->
+            <!-- ============================================================-->
+
+            <a class="btn btn-success btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#personModal">
+                + New Person
+            </a>
+
+            <a class="btn btn-success btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#projectModal">
+                + New Project
+            </a>
+
+            <div class="page-header">
+                <h1 class="page-title">📋 Issue Dashboard</h1>
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-primary btn-sm" id="btn-kanban" onclick="switchView('kanban')">🗂 Kanban</button>
+                        <button class="btn btn-outline-secondary btn-sm" id="btn-list" onclick="switchView('list')">📄 List</button>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <a href="IssueCreation.html" class="btn btn-success btn-sm fw-semibold">+ New Issue</a>
                 </div>
-                <div class="modal-body">
-                    <div class="issue-detail-grid" id="modal-detail-grid"></div>
-                    <div id="modal-resolution-section" class="resolution-section d-none">
-                        <h6>✅ Resolution Details</h6>
-                        <div class="issue-detail-grid">
-                            <div class="detail-field">
-                                <label>Resolution Summary</label>
-                                <div class="detail-value" id="modal-res-summary">—</div>
-                            </div>
-                            <div class="detail-field">
-                                <label>Resolution Date</label>
-                                <div class="detail-value" id="modal-res-date">—</div>
-                            </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Total Issues</div>
+                    <div class="stat-value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card" style="border-top:3px solid var(--open)">
+                    <div class="stat-label">Open</div>
+                    <div class="stat-value" id="stat-open" style="color:var(--open)">0</div>
+                </div>
+                <div class="stat-card" style="border-top:3px solid var(--overdue)">
+                    <div class="stat-label">Overdue</div>
+                    <div class="stat-value" id="stat-overdue" style="color:var(--overdue)">0</div>
+                </div>
+                <div class="stat-card" style="border-top:3px solid var(--resolved)">
+                    <div class="stat-label">Resolved</div>
+                    <div class="stat-value" id="stat-resolved" style="color:var(--resolved)">0</div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <span class="filter-label">Filter:</span>
+                <select id="filter-status" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+                <select id="filter-priority" onchange="applyFilters()">
+                    <option value="">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select id="filter-project" onchange="applyFilters()">
+                    <option value="">All Projects</option>
+                </select>
+                <input type="text" id="filter-search" placeholder="Search issues..." oninput="applyFilters()" style="min-width:160px;">
+                <button class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
+            </div>
+
+            <div id="kanban-view">
+                <div class="kanban-wrapper">
+
+                    <div class="kanban-column col-open">
+                        <div class="kanban-column-header">
+                            <span class="kanban-column-title" style="color:var(--open)">🔵 Open</span>
+                            <span class="kanban-count" id="count-open">0</span>
+                        </div>
+                        <div id="cards-open"></div>
+                        <div class="empty-state d-none" id="empty-open">
+                            <div class="empty-icon">🎉</div><div style="font-size:0.8rem">No open issues</div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column col-overdue">
+                        <div class="kanban-column-header">
+                            <span class="kanban-column-title" style="color:var(--overdue)">🔴 Overdue</span>
+                            <span class="kanban-count" id="count-overdue">0</span>
+                        </div>
+                        <div id="cards-overdue"></div>
+                        <div class="empty-state d-none" id="empty-overdue">
+                            <div class="empty-icon">✅</div><div style="font-size:0.8rem">None overdue</div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column" style="border-top:3px solid #f59e0b">
+                        <div class="kanban-column-header">
+                            <span class="kanban-column-title" style="color:#d97706">🟡 In Progress</span>
+                            <span class="kanban-count" id="count-inprogress">0</span>
+                        </div>
+                        <div id="cards-inprogress"></div>
+                        <div class="empty-state d-none" id="empty-inprogress">
+                            <div class="empty-icon">🚀</div><div style="font-size:0.8rem">Nothing in progress</div>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column col-resolved">
+                        <div class="kanban-column-header">
+                            <span class="kanban-column-title" style="color:var(--resolved)">🟢 Resolved</span>
+                            <span class="kanban-count" id="count-resolved">0</span>
+                        </div>
+                        <div id="cards-resolved"></div>
+                        <div class="empty-state d-none" id="empty-resolved">
+                            <div class="empty-icon">📭</div><div style="font-size:0.8rem">None resolved yet</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="list-view" class="d-none">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th style="cursor:pointer" onclick="sortBy('id')">#ID ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('summary')">Summary ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('project')">Project ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('assignedTo')">Assignee ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('priority')">Priority ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('status')">Status ↕</th>
+                            <th style="cursor:pointer" onclick="sortBy('date')">Date ↕</th>
+                        </tr>
+                        </thead>
+                        <tbody id="list-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state d-none" id="empty-list">
+                    <div class="empty-icon">🔍</div>
+                    <div>No issues found.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+<div class="modal fade" id="issueModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span id="modal-status-badge" class="badge-status"></span>
+                        <span id="modal-priority-badge" class="badge-priority"></span>
+                    </div>
+                    <h5 class="modal-title fw-bold mb-0" id="modal-summary">Issue Title</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="issue-detail-grid" id="modal-detail-grid"></div>
+                <div id="modal-resolution-section" class="resolution-section d-none">
+                    <h6>✅ Resolution Details</h6>
+                    <div class="issue-detail-grid">
+                        <div class="detail-field">
+                            <label>Resolution Summary</label>
+                            <div class="detail-value" id="modal-res-summary">—</div>
+                        </div>
+                        <div class="detail-field">
+                            <label>Resolution Date</label>
+                            <div class="detail-value" id="modal-res-date">—</div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0">
-                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary btn-sm" id="modal-edit-btn">Edit Issue</button>
-                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary btn-sm" id="modal-edit-btn">Edit Issue</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1 class="page-title">📋 Issue Dashboard</h1>
-        <div class="d-flex gap-2 align-items-center flex-wrap">
-            <div class="btn-group" role="group">
-                <button class="btn btn-primary btn-sm" id="btn-kanban" onclick="switchView('kanban')">🗂 Kanban</button>
-                <button class="btn btn-outline-secondary btn-sm" id="btn-list" onclick="switchView('list')">📄 List</button>
-            </div>
-            <a href="IssueCreation.html" class="btn btn-success btn-sm fw-semibold">+ New Issue</a>
-        </div>
-    </div>
+<section class="modal fade" id="personModal" tabindex="-1">
+  <section class="modal-dialog">
+    <section class="modal-content">
 
-    <!-- Stats Bar -->
-    <div class="stats-bar">
-        <div class="stat-card">
-            <div class="stat-label">Total Issues</div>
-            <div class="stat-value" id="stat-total">0</div>
-        </div>
-        <div class="stat-card" style="border-top:3px solid var(--open)">
-            <div class="stat-label">Open</div>
-            <div class="stat-value" id="stat-open" style="color:var(--open)">0</div>
-        </div>
-        <div class="stat-card" style="border-top:3px solid var(--overdue)">
-            <div class="stat-label">Overdue</div>
-            <div class="stat-value" id="stat-overdue" style="color:var(--overdue)">0</div>
-        </div>
-        <div class="stat-card" style="border-top:3px solid var(--resolved)">
-            <div class="stat-label">Resolved</div>
-            <div class="stat-value" id="stat-resolved" style="color:var(--resolved)">0</div>
-        </div>
-    </div>
+      <section class="modal-header">
+        <h5 class="modal-title">Add New Person</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </section>
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <span class="filter-label">Filter:</span>
-        <select id="filter-status" onchange="applyFilters()">
-            <option value="">All Statuses</option>
-            <option value="open">Open</option>
-            <option value="resolved">Resolved</option>
-            <option value="overdue">Overdue</option>
-        </select>
-        <select id="filter-priority" onchange="applyFilters()">
-            <option value="">All Priorities</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-        </select>
-        <select id="filter-project" onchange="applyFilters()">
-            <option value="">All Projects</option>
-        </select>
-        <input type="text" id="filter-search" placeholder="Search issues..." oninput="applyFilters()" style="min-width:160px;">
-        <button class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Clear</button>
-    </div>
+      <section class="modal-body">
 
-    <!-- Kanban View -->
-    <div id="kanban-view">
-        <div class="kanban-wrapper">
-            <div class="kanban-column col-open">
-                <div class="kanban-column-header">
-                    <span class="kanban-column-title" style="color:var(--open)">🔵 Open</span>
-                    <span class="kanban-count" id="count-open">0</span>
-                </div>
-                <div id="cards-open"></div>
-                <div class="empty-state d-none" id="empty-open"><div class="empty-icon">🎉</div><div style="font-size:0.8rem">No open issues</div></div>
-            </div>
-            <div class="kanban-column col-overdue">
-                <div class="kanban-column-header">
-                    <span class="kanban-column-title" style="color:var(--overdue)">🔴 Overdue</span>
-                    <span class="kanban-count" id="count-overdue">0</span>
-                </div>
-                <div id="cards-overdue"></div>
-                <div class="empty-state d-none" id="empty-overdue"><div class="empty-icon">✅</div><div style="font-size:0.8rem">None overdue</div></div>
-            </div>
-            <div class="kanban-column" style="border-top:3px solid #f59e0b">
-                <div class="kanban-column-header">
-                    <span class="kanban-column-title" style="color:#d97706">🟡 In Progress</span>
-                    <span class="kanban-count" id="count-inprogress">0</span>
-                </div>
-                <div id="cards-inprogress"></div>
-                <div class="empty-state d-none" id="empty-inprogress"><div class="empty-icon">🚀</div><div style="font-size:0.8rem">Nothing in progress</div></div>
-            </div>
-            <div class="kanban-column col-resolved">
-                <div class="kanban-column-header">
-                    <span class="kanban-column-title" style="color:var(--resolved)">🟢 Resolved</span>
-                    <span class="kanban-count" id="count-resolved">0</span>
-                </div>
-                <div id="cards-resolved"></div>
-                <div class="empty-state d-none" id="empty-resolved"><div class="empty-icon">📭</div><div style="font-size:0.8rem">None resolved yet</div></div>
-            </div>
-        </div>
-    </div>
+  <input type="number" id="newPersonId" placeholder="ID" class="form-control mb-2">
+  <input type="text" id="newPersonName" placeholder="First Name" class="form-control mb-2">
+  <input type="text" id="newPersonSurname" placeholder="Surname" class="form-control mb-2">
+  <input type="email" id="newPersonEmail" placeholder="Email" class="form-control mb-2">
+  <input type="text" id="newPersonUsername" placeholder="Username" class="form-control mb-2">
 
-    <!-- List View -->
-    <div id="list-view" class="d-none">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th style="cursor:pointer" onclick="sortBy('id')">#ID ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('summary')">Summary ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('project')">Project ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('assignedTo')">Assignee ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('priority')">Priority ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('status')">Status ↕</th>
-                        <th style="cursor:pointer" onclick="sortBy('date')">Date ↕</th>
-                    </tr>
-                </thead>
-                <tbody id="list-tbody"></tbody>
-            </table>
-        </div>
-        <div class="empty-state d-none" id="empty-list">
-            <div class="empty-icon">🔍</div>
-            <div>No issues found.</div>
-        </div>
-    </div>
+  <label class="form-label mt-2">Profile Picture (optional)</label>
+  <input type="file" id="newPersonImage" class="form-control" accept="image/*">
 
-</div><!-- end #main-ui -->
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script src="storage.js"></script>
+      <section class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="addPerson()">Save</button>
+      </section>
 
-    <script>
+    </section>
+  </section>
+</section>
+
+<section class="modal fade" id="projectModal" tabindex="-1">
+  <section class="modal-dialog">
+    <section class="modal-content">
+
+      <section class="modal-header">
+        <h5 class="modal-title">Add New Project</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </section>
+
+     <section class="modal-body">
+        <input type="number" id="newProjectId" placeholder="Project ID" class="form-control mb-2">
+        <input type="text" id="newProjectName" placeholder="Project Name" class="form-control">
+     </section>
+
+      <section class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="addProject()">Save</button>
+      </section>
+
+    </section>
+  </section>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="storage.js"></script>
+<script src="PeopleProjects.js"></script>
+
+<script>
 let allIssues = [], filteredIssues = [], currentView = 'kanban', sortKey = 'id', sortAsc = true;
 const PRIORITY_ORDER = { high:0, medium:1, low:2 };
 
@@ -281,17 +354,31 @@ function formatDate(d) {
     const dt = new Date(d);
     return isNaN(dt) ? d : dt.toLocaleDateString('en-ZA', { day:'2-digit', month:'short', year:'numeric' });
 }
+function getPersonDisplay(username) {
+    if (!username) return '👤 Unassigned';
+    const people = BTS.getData(BTS.KEYS.PEOPLE);
+    const person = people.find(p => p.username === username);
+    if (!person) return '👤 ' + username;
+    const name = `${person.name || ''} ${person.surname || ''}`;
+    if (person.profilePicture) {
+        return `<span style="display:flex;align-items:center;gap:6px;"><img src="${person.profilePicture}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;">${name}</span>`;
+    }
+    return `👤 ${name}`;
+}
+
 function loadIssues() {
     allIssues = BTS.getData(BTS.KEYS.ISSUES) || [];
     populateProjectFilter();
     applyFilters();
 }
+
 function updateStats(issues) {
     document.getElementById('stat-total').textContent = issues.length;
     document.getElementById('stat-open').textContent = issues.filter(i=>i.status==='open').length;
     document.getElementById('stat-overdue').textContent = issues.filter(i=>i.status==='overdue').length;
     document.getElementById('stat-resolved').textContent = issues.filter(i=>i.status==='resolved').length;
 }
+
 function populateProjectFilter() {
     const sel = document.getElementById('filter-project');
     const projects = [...new Set(allIssues.map(i=>i.project).filter(Boolean))].sort();
@@ -299,6 +386,7 @@ function populateProjectFilter() {
     sel.innerHTML = '<option value="">All Projects</option>';
     projects.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p; if(p===cur)o.selected=true; sel.appendChild(o); });
 }
+
 function applyFilters() {
     const sf=document.getElementById('filter-status').value;
     const pf=document.getElementById('filter-priority').value;
@@ -314,6 +402,7 @@ function applyFilters() {
     updateStats(filteredIssues);
     renderCurrentView();
 }
+
 function clearFilters() {
     document.getElementById('filter-status').value='';
     document.getElementById('filter-priority').value='';
@@ -321,6 +410,7 @@ function clearFilters() {
     document.getElementById('filter-search').value='';
     applyFilters();
 }
+
 function switchView(view) {
     currentView = view;
     document.getElementById('kanban-view').classList.toggle('d-none', view!=='kanban');
@@ -329,7 +419,11 @@ function switchView(view) {
     document.getElementById('btn-list').className = view==='list' ? 'btn btn-primary btn-sm' : 'btn btn-outline-secondary btn-sm';
     renderCurrentView();
 }
-function renderCurrentView() { currentView==='kanban' ? renderKanban() : renderList(); }
+
+function renderCurrentView() {
+    currentView==='kanban' ? renderKanban() : renderList();
+}
+
 function buildIssueCard(issue) {
     const card = document.createElement('div');
     card.className = `issue-card prio-${issue.priority}`;
@@ -341,37 +435,47 @@ function buildIssueCard(issue) {
         <div class="issue-summary">${issue.summary||'Untitled'}</div>
         <div class="issue-project">${issue.project||'—'}</div>
         <div class="issue-meta">
-            <span class="issue-assignee">👤 ${issue.assignedTo||'Unassigned'}</span>
+            <span class="issue-assignee">${getPersonDisplay(issue.assignedTo)}</span>
             <span class="issue-date">${formatDate(issue.date)}</span>
         </div>`;
     card.addEventListener('click', ()=>openIssueModal(issue.id));
     return card;
 }
+
 function renderKanban() {
     const cols = {
-        open:       {cards:'cards-open',      count:'count-open',      empty:'empty-open'},
-        overdue:    {cards:'cards-overdue',    count:'count-overdue',   empty:'empty-overdue'},
-        inprogress: {cards:'cards-inprogress', count:'count-inprogress',empty:'empty-inprogress'},
-        resolved:   {cards:'cards-resolved',   count:'count-resolved',  empty:'empty-resolved'}
+        open: {cards:'cards-open',count:'count-open',empty:'empty-open'},
+        overdue: {cards:'cards-overdue',count:'count-overdue',empty:'empty-overdue'},
+        inprogress: {cards:'cards-inprogress',count:'count-inprogress',empty:'empty-inprogress'},
+        resolved: {cards:'cards-resolved',count:'count-resolved',empty:'empty-resolved'}
     };
-    Object.values(cols).forEach(c=>{ document.getElementById(c.cards).innerHTML=''; });
-    const cat = {open:[],overdue:[],inprogress:[],resolved:[]};
+    Object.values(cols).forEach(c=>document.getElementById(c.cards).innerHTML='');
+    const cat={open:[],overdue:[],inprogress:[],resolved:[]};
+
     filteredIssues.forEach(i=>{
         if(i.status==='resolved') cat.resolved.push(i);
         else if(i.status==='overdue') cat.overdue.push(i);
         else if(i.assignedTo) cat.inprogress.push(i);
         else cat.open.push(i);
     });
+
     Object.entries(cat).forEach(([key,issues])=>{
         const col=cols[key];
         document.getElementById(col.count).textContent=issues.length;
-        issues.sort((a,b)=>(PRIORITY_ORDER[a.priority]??2)-(PRIORITY_ORDER[b.priority]??2));
         const emptyEl=document.getElementById(col.empty);
-        if(issues.length===0){emptyEl.classList.remove('d-none');}
-        else{emptyEl.classList.add('d-none');issues.forEach(i=>document.getElementById(col.cards).appendChild(buildIssueCard(i)));}
+        if(issues.length===0){emptyEl.classList.remove('d-none');return;}
+        emptyEl.classList.add('d-none');
+        issues.sort((a,b)=>(PRIORITY_ORDER[a.priority]??2)-(PRIORITY_ORDER[b.priority]??2));
+        issues.forEach(i=>document.getElementById(col.cards).appendChild(buildIssueCard(i)));
     });
 }
-function sortBy(key) { if(sortKey===key)sortAsc=!sortAsc; else{sortKey=key;sortAsc=true;} renderList(); }
+
+function sortBy(key) {
+    if(sortKey===key) sortAsc=!sortAsc;
+    else {sortKey=key;sortAsc=true;}
+    renderList();
+}
+
 function renderList() {
     const tbody=document.getElementById('list-tbody');
     const emptyEl=document.getElementById('empty-list');
@@ -388,49 +492,70 @@ function renderList() {
     sorted.forEach(issue=>{
         const tr=document.createElement('tr');
         tr.innerHTML=`
-            <td><span style="font-size:0.75rem;color:var(--text-muted)">#${issue.id}</span></td>
-            <td><strong>${issue.summary||'—'}</strong></td>
-            <td>${issue.project||'—'}</td>
-            <td><span class="issue-assignee">👤 ${issue.assignedTo||'Unassigned'}</span></td>
-            <td>${priorityBadgeHtml(issue.priority)}</td>
-            <td>${statusBadgeHtml(issue.status)}</td>
-            <td><span style="font-size:0.8rem;color:var(--text-muted)">${formatDate(issue.date)}</span></td>`;
+        <td>#${issue.id}</td>
+        <td><strong>${issue.summary||'—'}</strong></td>
+        <td>${issue.project||'—'}</td>
+        <td>${getPersonDisplay(issue.assignedTo)}</td>
+        <td>${priorityBadgeHtml(issue.priority)}</td>
+        <td>${statusBadgeHtml(issue.status)}</td>
+        <td>${formatDate(issue.date)}</td>`;
         tr.addEventListener('click',()=>openIssueModal(issue.id));
         tbody.appendChild(tr);
     });
 }
+
 function openIssueModal(issueId) {
     const issue=allIssues.find(i=>i.id==issueId);
     if(!issue) return;
+
     document.getElementById('modal-summary').textContent=issue.summary||'Untitled';
+
     const sb=document.getElementById('modal-status-badge');
-    sb.className=`badge-status status-${issue.status}`; sb.textContent=issue.status;
+    sb.className=`badge-status status-${issue.status}`;
+    sb.textContent=issue.status;
+
     const pb=document.getElementById('modal-priority-badge');
-    pb.className=`badge-priority prio-badge-${issue.priority}`; pb.textContent=issue.priority;
+    pb.className=`badge-priority prio-badge-${issue.priority}`;
+    pb.textContent=issue.priority;
+
     document.getElementById('modal-detail-grid').innerHTML=`
         <div class="detail-field span-2"><label>Description</label><div class="detail-value">${issue.description||'No description.'}</div></div>
         <div class="detail-field"><label>Project</label><div class="detail-value">${issue.project||'—'}</div></div>
-        <div class="detail-field"><label>Assigned To</label><div class="detail-value">👤 ${issue.assignedTo||'Unassigned'}</div></div>
-        <div class="detail-field"><label>Reported By</label><div class="detail-value">${issue.person||'—'}</div></div>
+        <div class="detail-field"><label>Assigned To</label><div class="detail-value">${getPersonDisplay(issue.assignedTo)}</div></div>
+        <div class="detail-field"><label>Reported By</label><div class="detail-value">${issue.person||'Admin'}</div></div>
         <div class="detail-field"><label>Date Identified</label><div class="detail-value">${formatDate(issue.date)}</div></div>
         <div class="detail-field"><label>Target Resolution</label><div class="detail-value">${formatDate(issue.dueDate)}</div></div>
         <div class="detail-field"><label>Issue ID</label><div class="detail-value">#${issue.id}</div></div>`;
+
     const resSection=document.getElementById('modal-resolution-section');
     if(issue.status==='resolved'&&(issue.resolutionSummary||issue.resolutionDate)){
         resSection.classList.remove('d-none');
         document.getElementById('modal-res-summary').textContent=issue.resolutionSummary||'—';
         document.getElementById('modal-res-date').textContent=formatDate(issue.resolutionDate);
-    } else { resSection.classList.add('d-none'); }
-    document.getElementById('modal-edit-btn').onclick=()=>{ window.location.href=`IssueCreation.html?edit=${issue.id}`; };
+    } else resSection.classList.add('d-none');
+
+    document.getElementById('modal-edit-btn').onclick=()=>window.location.href=`editissue.html?edit=${issue.id}`;
     new bootstrap.Modal(document.getElementById('issueModal')).show();
 }
 
-// Hook into Role 1's showApp so dashboard loads after login
 const _orig = window.showApp;
 window.showApp = function() {
     _orig && _orig();
     if(localStorage.getItem('bts_admin_logged_in')==='true') loadIssues();
 };
+
+document.addEventListener('DOMContentLoaded',()=>{
+    if(localStorage.getItem('bts_admin_logged_in')==='true'){
+        loadIssues();
+    }
+});
+window.addEventListener("focus", () => {
+    if (sessionStorage.getItem("bts_issue_updated") === "1") {
+        sessionStorage.removeItem("bts_issue_updated");
+        loadIssues();
+    }
+});
 </script>
+
 </body>
 </html>

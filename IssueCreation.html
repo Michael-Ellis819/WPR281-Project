@@ -7,31 +7,39 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
  <h2>Create Issue</h2>
 
 <form id="createForm">
-  <label >Summary:</label>  
+  <label>Summary:</label>  
   <input type="text" id="summary" required>
+
   <label>Description:</label>
   <textarea id="description"></textarea>
+
   <label>Person:</label>
-  <input type="text" id="person">
+  <select id="person"></select>
+
   <label>Project:</label>
-  <input type="text" id="project">
+<select id="project"></select>
+
   <label>Status:</label>  
   <select id="status">
     <option value="open">Open</option>
     <option value="resolved">Resolved</option>
   </select>
+
   <label>Priority:</label>
   <select id="priority">
     <option value="low">Low</option>
     <option value="medium">Medium</option>
     <option value="high">High</option>
   </select>
+
   <label>Due Date:</label>
   <input type="date" id="dueDate">
 
+  
   <div id="resolutionFields">
     <label>Resolution Summary:</label>
     <input type="text" id="resolutionSummary">
@@ -43,7 +51,17 @@
 </form>
 
 <script src="storage.js"></script>
+
 <script>
+initializeData();
+initializeEntities();
+</script>
+
+<script src="PeopleProjects.js"></script>
+
+<script>
+const resolutionFields = document.getElementById("resolutionFields");
+
 document.getElementById("status").addEventListener("change", function () {
   resolutionFields.style.display = this.value === "resolved" ? "block" : "none";
 });
@@ -70,30 +88,54 @@ function validate(issue) {
 document.getElementById("createForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  let issue = {
-    id: Date.now(),
-    summary: summary.value,
-    description: description.value,
-    person: person.value,
-    project: project.value,
-    status: status.value,
-    priority: priority.value,
-    dueDate: dueDate.value,
-    resolutionSummary: resolutionSummary.value,
-    resolutionDate: resolutionDate.value
-  };
+ let issue = {
+  id: Date.now(),
+  summary: summary.value,
+  description: description.value,
+  assignedTo: person.value,
+  project: project.value,
+  status: status.value,
+  priority: priority.value,
+  dueDate: dueDate.value,
+  resolutionSummary: resolutionSummary.value,
+  resolutionDate: resolutionDate.value,
+  date: new Date().toISOString().split("T")[0]
+};
 
   const error = validate(issue);
   if (error) return alert(error);
 
-  issue = applyStatusLogic(issue);
+  const finalIssue = applyStatusLogic(issue);
 
-  BTS.addItem(BTS.KEYS.issues, issue);
+  BTS.addItem(BTS.KEYS.ISSUES, finalIssue);
+
+  sessionStorage.setItem("bts_issue_updated", "1");
+  window.location.href = "index.html";
 
   this.reset();
+  resolutionFields.style.display = "none";
 });
+
+// correct dropdown loading (shared)
+function populatePeopleDropdown() {
+    const people = BTS.getData(BTS.KEYS.PEOPLE);
+    const select = document.getElementById("person");
+
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Select Person</option>';
+
+    people.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.username;
+        option.textContent = `${p.name} ${p.surname || ''}`;
+        select.appendChild(option);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", populatePeopleDropdown);
+window.addEventListener("storage", populatePeopleDropdown);
 </script>
-</form>
 
 </body>
 </html>
